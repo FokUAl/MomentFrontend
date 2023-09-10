@@ -8,7 +8,7 @@ export const AppStateProvider = props => {
   const [phoneNumber, setPhoneNumber] = useState();
   const [needUpdate, setNeedUpdate] = useState({need: false, link: undefined});
   const [darkTheme, setDarkTheme] = useState(false)
-
+  const [offerTimer, setOfferTimer] = useState(false)
   return (
     <AppStateContext.Provider
       value={{
@@ -22,6 +22,8 @@ export const AppStateProvider = props => {
         setNeedUpdate,
         darkTheme,
         setDarkTheme,
+        offerTimer,
+        setOfferTimer
       }}>
       {props.children}
     </AppStateContext.Provider>

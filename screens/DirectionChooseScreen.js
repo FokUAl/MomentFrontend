@@ -7,6 +7,7 @@ import axios from 'axios';
 import ButtonLess from '../components/ButtonLess';
 import Theme from '../constants/Theme';
 import data from '../data';
+import apis from '../constants/apis';
 import {AppStateContext} from '../store/app.context';
 import InputChoose from '../components/InputChoose';
 
@@ -19,6 +20,17 @@ export default function DirectionChooseScreen({navigation}) {
   const [direction, setDirection] = useState();
 
   useEffect(() => {
+    // axios.post(apis.getDirection, {phone: appContext.phoneNumber})
+    // .then(response => {
+    //   setDirectionOne({
+    //     cityFrom: response.Direction.cityFrom,
+    //     cityTo: response.Direction.cityTo,
+    //   });
+    //   setDirectionTwo({
+    //     cityFrom: response.Direction.cityTo,
+    //     cityTo: response.Direction.cityFrom,
+    //   });
+    // })
     setIsLoading(true);
     setDirectionOne({
       //Поменять на response ВАЖНО

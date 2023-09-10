@@ -44,11 +44,13 @@ const OrderModal = ({update}) => {
     modalOverlay: {
       width: '100%',
       height: '100%',
+      backgroundColor: 'black',
       position: 'absolute',
       top: 0,
       bottom: 0,
       left: 0,
       right: 0,
+      opacity: .7
     },
   });
   return (
@@ -60,8 +62,7 @@ const OrderModal = ({update}) => {
         onRequestClose={() => {
             orderContext.setModalVisible(prev => !prev);
         }}>
-        <TouchableWithoutFeedback
-          onPress={() => orderContext.setModalVisible(false)}>
+        <TouchableWithoutFeedback>
           <View style={styles.modalOverlay}></View>
         </TouchableWithoutFeedback>
         <View style={styles.modalView}>

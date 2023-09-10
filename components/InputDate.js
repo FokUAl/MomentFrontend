@@ -66,7 +66,7 @@ const InputDate = ({
                 ? `${value.getDate()} ${new Intl.DateTimeFormat('ru-RU', {
                     month: 'short',
                   }).format(value)} ${value.getFullYear()} г.`
-                : `${value.getHours()}:${value.getMinutes()}`
+                : `${(value.getHours()<10?'0':'')}${value.getHours()}:${(value.getMinutes()<10?'0':'')}${value.getMinutes()}`
               : ''}
           </Text>
         ) : (

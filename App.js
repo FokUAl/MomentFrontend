@@ -1,6 +1,7 @@
 import {useEffect, useRef, useContext} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import KeepAwake from 'react-native-keep-awake';
 import InitScreen from './screens/InitScreen';
 import LoginScreen from './screens/LoginScreen';
 import NewVersionScreen from './screens/NewVersionScreen';
@@ -18,6 +19,7 @@ export default function App() {
       <FilterStateProvider>
         <OrderStateProvider>
           <NavigationContainer>
+            <KeepAwake />
             <Stack.Navigator
               initialRouteName={'InitScreen'}
               screenOptions={{

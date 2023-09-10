@@ -32,10 +32,10 @@ function TabGroup({navigation}) {
     let ws;
       if (filter.filterConfigurations.isMail) {
         ws = new WebSocket('ws://3.76.124.47:8000/ws/get-parcel-phone');
-        console.log('WebSocket connection');
+        console.log('WebSocket connection mail');
       } else {
         ws = new WebSocket('ws://3.76.124.47:8000/ws/get-phone');
-        console.log('WebSocket connection');
+        console.log('WebSocket connection passenger');
       }
 
       if (!filter.filterConfigurations.isSearching) {
@@ -78,6 +78,7 @@ function TabGroup({navigation}) {
         };
       }
       ws.onmessage = e => {
+        const callTimeStart = Date.now()
         if (filter.filterConfigurations.isSearching) {
           console.log('on message', e.data);
           if (e.data.Error) {
@@ -85,17 +86,10 @@ function TabGroup({navigation}) {
           } else {
             const newData = JSON.parse(e.data);
             if (newData.Order.PassengerPhone) {
+              console.log('WS Call time', Date.now() - callTimeStart)
               RNImmediatePhoneCall.immediatePhoneCall(
                 newData.Order.PassengerPhone,
               );
-              filter.setFilterConfigurations(prev => {
-                return {
-                  ...prev,
-                  isSearching: false,
-                  isSearchDelay: false
-                };
-              });
-              console.log('newData',newData)
               orderContext.setOrder({
                 price: newData.Order.Price,
                 departureDate: newData.Order.DepartureDate,
@@ -109,9 +103,16 @@ function TabGroup({navigation}) {
               orderContext.setModalVisible(true);
               setUpdate(prev => !prev);
             }
-            clearInterval(ping);
-            ws.send(JSON.stringify('close'));
           }
+          filter.setFilterConfigurations(prev => {
+            return {
+              ...prev,
+              isSearching: false,
+              isSearchDelay: false
+            };
+          });
+          clearInterval(ping);
+          ws.send(JSON.stringify('close'));
         }
       };
       ws.onerror = e => {

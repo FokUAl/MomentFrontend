@@ -22,85 +22,73 @@ const AddOffer = () => {
     openDate: false,
     openTime: false,
   });
+
   const onSubmit = () => {
     if (offer.price && offer.comm && offer.date && offer.time) {
+      const departureTime = `${Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+      }).format(
+        offer.date,
+      )}, ${(offer.date.getDate()<10?'0':'')}${offer.date.getDate()} ${Intl.DateTimeFormat('en-US', {
+        month: 'short',
+      }).format(
+        offer.date,
+      )} ${offer.date.getFullYear()} ${(offer.time.getHours()<10?'0':'')}${offer.time.getHours()}:${(offer.time.getMinutes()<10?'0':'')}${offer.time.getMinutes()}:00 +0600`;
       const request = async () => {
-        try {
-          axios
-            .post(apis.addOffer, {
-              City: appContext.cityFrom,
-              Destination: appContext.cityTo,
-              Departure: `${Intl.DateTimeFormat('en-US', {
-                weekday: 'short',
-              }).format(
-                offer.date,
-              )}, ${offer.date.getDate()} ${Intl.DateTimeFormat('en-US', {
-                month: 'short',
-              }).format(
-                offer.date,
-              )} ${offer.date.getFullYear()} ${offer.time.getHours()}:${offer.time.getMinutes()}:${offer.time.getSeconds()} +0600`,
-              Phone: appContext.phoneNumber,
-              Price: offer.price,
-              Description: offer.comm,
-            })
-            .then(response => {
-              console.log('response', response.data.Content);
-              if (response.data.Content.split(' ')[0] === '"You\'re') {
-                Alert.alert('Добавить заказ?', response.data.Content, [
-                  {
-                    text: 'Отмена',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
+        axios
+          .post(apis.addOffer, {
+            City: appContext.cityFrom,
+            Destination: appContext.cityTo,
+            Departure: departureTime,
+            Phone: appContext.phoneNumber,
+            Price: offer.price,
+            Description: offer.comm,
+          })
+          .then(response => {
+            console.log('response', response.data.Content);
+            if (response.data.Content.split(' ')[0] === 'Требуется') {
+              console.log(departureTime)
+              Alert.alert('Добавить заказ?', response.data.Content, [
+                {
+                  text: 'Отмена',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {
+                  text: 'Добавить',
+                  onPress: () => {
+                    axios
+                      .post(apis.addOfferConfirmation, {
+                        City: appContext.cityFrom,
+                        Destination: appContext.cityTo,
+                        // Departure:"Tue, 8 Aug 2023 20:30:00 +0600",
+                        Departure: departureTime,
+                        Phone: appContext.phoneNumber,
+                        Price: offer.price,
+                        Description: offer.comm,
+                      })
+                      .then(response => {
+                        console.log('add offer confirmation ok', response);
+                        Alert.alert('Заказ добавлен');
+                      })
+                      .catch(error => {
+                        console.log(
+                          'add offer confirmation err',
+                          error.message,
+                        );
+                        Alert.alert(error.message);
+                      });
                   },
-                  {
-                    text: 'Добавить',
-                    onPress: () => {
-                      axios
-                        .post(apis.addOfferConfirmation, {
-                          City: appContext.cityFrom,
-                          Destination: appContext.cityTo,
-                          // Departure:"Tue, 8 Aug 2023 20:30:00 +0600",
-                          Departure: `${Intl.DateTimeFormat('en-US', {
-                            weekday: 'short',
-                          }).format(
-                            offer.date,
-                          )}, ${offer.date.getDate()} ${Intl.DateTimeFormat(
-                            'en-US',
-                            {
-                              month: 'short',
-                            },
-                          ).format(
-                            offer.date,
-                          )} ${offer.date.getFullYear()} ${offer.time.getHours()}:${offer.time.getMinutes()}:${offer.time.getSeconds()} +0600`,
-                          Phone: appContext.phoneNumber,
-                          Price: offer.price,
-                          Description: offer.comm,
-                        })
-                        .then(response => {
-                          console.log('add offer confirmation ok', response);
-                          Alert.alert('Заказ добавлен');
-                        })
-                        .catch(error => {
-                          console.log(
-                            'add offer confirmation err',
-                            error.message,
-                          );
-                          Alert.alert(error.message);
-                        });
-                    },
-                  },
-                ]);
-              } else {
-                Alert.alert('Не хватает средств', response.data.Content);
-              }
-            })
-            .catch(error => {
-              console.log('add offer err', error.message);
-              Alert.alert(error.message);
-            });
-        } catch (e) {
-          console.error(e);
-        }
+                },
+              ]);
+            } else {
+              Alert.alert('Не хватает средств', response.data.Content);
+            }
+          })
+          .catch(error => {
+            console.log('add offer err', error.message);
+            Alert.alert(error.message);
+          });
       };
       request();
     } else {

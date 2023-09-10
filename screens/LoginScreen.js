@@ -160,7 +160,7 @@ export default function LoginScreen({navigation}) {
             />
           </View>
           <Button onPress={onSubmit} value={'Войти'} />
-          <Button onPress={skip} value={'Пропустить'} />
+          {/* <Button onPress={skip} value={'Пропустить'} /> */}
         </View>
       </SafeAreaView>
     </SafeAreaProvider>

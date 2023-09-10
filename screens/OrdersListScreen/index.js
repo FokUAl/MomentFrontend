@@ -19,6 +19,7 @@ import ButtonLess from '../../components/ButtonLess';
 import Direction from '../../components/Direction';
 import ModalContent from './components/FilterContent';
 import OrderModal from './components/OrderModal';
+import PingContent from './components/PingContent';
 
 export default function OrdersListScreen({navigation, update}) {
   const appContext = useContext(AppStateContext);
@@ -80,6 +81,9 @@ export default function OrdersListScreen({navigation, update}) {
     direction: {
       flex: 1,
     },
+    pingArea: {
+      flex: .5
+    },
     noOrders: {
       height: '100%',
       textAlign: 'center',
@@ -99,6 +103,9 @@ export default function OrdersListScreen({navigation, update}) {
       <SafeAreaView styles={styles.safeView}>
         <View style={styles.main}>
           <View style={styles.cardsView}>
+            <View style={styles.pingArea}>
+              <PingContent />
+            </View>
             <View style={styles.direction}>
               <Direction />
             </View>

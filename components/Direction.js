@@ -2,12 +2,10 @@ import {useContext} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {AppStateContext} from '../store/app.context';
-import {FilterStateContext} from '../store/filter.context';
 import Theme from '../constants/Theme';
 
 const Direction = () => {
   const appContext = useContext(AppStateContext);
-  const filterContext = useContext(FilterStateContext);
   const colors = Theme(appContext.darkTheme);
 
   const styles = StyleSheet.create({
@@ -37,25 +35,15 @@ const Direction = () => {
 
   return (
     <View style={styles.wrapper}>
-      {filterContext.filterConfigurations.isSearching ? (
-        <View style={styles.spinnerWrapper}>
-          <Text style={{color: colors.text}}>Идёт</Text>
-          <View style={styles.spinner}>
-            <ActivityIndicator size="small" color={colors.text} />
-          </View>
-          <Text style={{color: colors.text}}>поиск</Text>
-        </View>
-      ) : (
-        <View style={styles.direction}>
-          <Text style={styles.directionText}>{appContext.cityFrom}</Text>
-          <Text style={styles.directionText}>
-            <Ionicons name={'chevron-forward'} color={colors.text} />
-            <Ionicons name={'chevron-forward'} color={colors.text} />
-            <Ionicons name={'chevron-forward'} color={colors.text} />
-          </Text>
-          <Text style={styles.directionText}>{appContext.cityTo}</Text>
-        </View>
-      )}
+      <View style={styles.direction}>
+        <Text style={styles.directionText}>{appContext.cityFrom}</Text>
+        <Text style={styles.directionText}>
+          <Ionicons name={'chevron-forward'} color={colors.text} />
+          <Ionicons name={'chevron-forward'} color={colors.text} />
+          <Ionicons name={'chevron-forward'} color={colors.text} />
+        </Text>
+        <Text style={styles.directionText}>{appContext.cityTo}</Text>
+      </View>
     </View>
   );
 };

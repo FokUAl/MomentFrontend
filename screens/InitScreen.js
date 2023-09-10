@@ -14,29 +14,16 @@ export default function InitScreen({navigation}) {
   const link = useRef(null);
 
   useEffect(() => {
-    axios
-    .get(apis.getLatestVersion)
-    .then(response => {
-      console.log('Get latest version ok');
-      setNewVer(response.data.Version);
-      link.current = response.data.Link;
-    })
-    .catch(error => {
-      console.log('Get latest version err', error.message);
-    });
-  }, [])
-
-  useEffect(() => {
-    const getMode = async() => {
+    const getMode = async () => {
       try {
-        const value = await AsyncStorage.getItem('darkMode')
-        appContext.setDarkTheme(value === 'dark' ? false : true)
-        console.log('getMode', value)
-      } catch(e) {
-        console.error(e)
+        const value = await AsyncStorage.getItem('darkMode');
+        appContext.setDarkTheme(value === 'dark' ? false : true);
+        console.log('getMode', value);
+      } catch (e) {
+        console.error(e);
       }
-    }
-    getMode()
+    };
+    getMode();
 
     setCurVer(DeviceInfo.getVersion());
     if (curVer && newVer) {
@@ -48,14 +35,31 @@ export default function InitScreen({navigation}) {
           return {need: true, link: link.current};
         });
         console.log('NEED UPDATE');
-        navigation.navigate('NewVersionScreen');
+        setTimeout(() => {
+          navigation.navigate('NewVersionScreen');
+        }, 3000);
       } else {
-        navigation.navigate('LoginScreen');
-        console.log('NAVIGATE to login after version')
+        console.log('NAVIGATE to login after version');
+        setTimeout(() => {
+          navigation.navigate('LoginScreen');
+        }, 3000);
       }
     }
   }, [curVer, newVer]);
   console.log('init cur', curVer, 'new', newVer);
+
+  useEffect(() => {
+    axios
+      .get(apis.getLatestVersion)
+      .then(response => {
+        console.log('Get latest version ok');
+        setNewVer(response.data.Version);
+        link.current = response.data.Link;
+      })
+      .catch(error => {
+        console.log('Get latest version err', error.message);
+      });
+  }, []);
 
   const styles = StyleSheet.create({
     container: {
@@ -66,7 +70,11 @@ export default function InitScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      {/* <ActivityIndicator size="large" color={colors.secondary} /> */}
+      <ActivityIndicator
+        size="large"
+        color={'#07bc67'}
+        style={{transform: [{scaleX: 2}, {scaleY: 2}]}}
+      />
     </View>
   );
 }

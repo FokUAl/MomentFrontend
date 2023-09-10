@@ -14,4 +14,7 @@ export default apis = {
   getParcelPhone: BACKEND_IP + '/ws/get-parcel-phone',
   getProfile: BACKEND_IP + '/api/get-profile',
   getLatestVersion: BACKEND_IP + '/api/get-latest-version',
+  getDirection: BACKEND_IP + '/auth/get-direction',
+  apiPing: BACKEND_IP + '/api/api-ping',
+  serverPing: BACKEND_IP + '/api/server-ping',
 };
