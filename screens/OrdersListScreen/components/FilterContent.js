@@ -2,6 +2,8 @@ import {useState, useContext} from 'react';
 import {View, StyleSheet, Text, ActivityIndicator, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Switch} from 'react-native-switch';
+import axios from 'axios';
+import apis from '../../../constants/apis.js';
 import {AppStateContext} from '../../../store/app.context.js';
 import Theme from '../../../constants/Theme.js';
 import {FilterStateContext} from '../../../store/filter.context.js';
@@ -20,13 +22,17 @@ const ModalContent = () => {
   const [openTimeEnd, setOpenTimeEnd] = useState(false);
   const [connection, setConnection] = useState(false);
 
-  const deleteOfferTimer = async () => {
-    try {
-      await AsyncStorage.removeItem('offerTimer');
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  const CheckOffer = () => {
+    axios.get(apis.checkOffer, {headers: {Authorization: appContext.androidId}})
+    .then(response => {
+      console.log('checkoffer', response.data)
+      if (response.data.Response === 'Маршрут не выставлен. Добавьте его') {
+
+      }
+      // setConnection(prev => !prev);
+    })
+    .catch(err => console.err(err.message))
+  }
 
   const styles = StyleSheet.create({
     container: {
@@ -197,8 +203,8 @@ const ModalContent = () => {
             <ButtonLess
               value={
                 filter.filterConfigurations.isSearching
-                  ? 'Идёт поиск'
-                  : 'Начать поиск'
+                  ? 'Идёт автодозвон'
+                  : 'Начать автодозвон'
               }
               fluid
               isActive={filter.filterConfigurations.isSearching}
@@ -213,7 +219,7 @@ const ModalContent = () => {
                 setOpenDate(false);
                 setOpenTimeEnd(false);
                 setOpenTimeStart(false);
-                setConnection(prev => !prev);
+                CheckOffer()
                 console.log('delay on');
               }}
               isDisabled={filter.filterConfigurations.isSearchDelay}

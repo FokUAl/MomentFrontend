@@ -31,19 +31,22 @@ export default function OrdersListScreen({navigation, update}) {
     const request = async () => {
       try {
         axios
-          .get(apis.getLastOrders, {
-            params: {
+          .post(
+            apis.getLastOrders,
+            {
               City: appContext.cityFrom,
               Destination: appContext.cityTo,
-              Phone: appContext.phoneNumber,
             },
-          })
+            {
+              headers: {Authorization: appContext.androidId},
+            },
+          )
           .then(response => {
             setData({
               isLoading: false,
               lastOrdersArr: response.data,
             });
-            console.log('orders ok');
+            console.log('orders ok', response);
             return;
           })
           .catch(error => {
@@ -82,7 +85,7 @@ export default function OrdersListScreen({navigation, update}) {
       flex: 1,
     },
     pingArea: {
-      flex: .5
+      flex: 0.5,
     },
     noOrders: {
       height: '100%',

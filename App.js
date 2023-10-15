@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import KeepAwake from 'react-native-keep-awake';
 import InitScreen from './screens/InitScreen';
+import TokenScreen from './screens/TokenScreen'
 import LoginScreen from './screens/LoginScreen';
 import NewVersionScreen from './screens/NewVersionScreen';
 import DirectionChooseScreen from './screens/DirectionChooseScreen';
@@ -27,6 +28,10 @@ export default function App() {
                 gestureEnabled: false,
               }}>
               <Stack.Screen name="InitScreen" component={InitScreen} />
+              <Stack.Screen
+                name="TokenScreen"
+                component={TokenScreen}
+              />
               <Stack.Screen name="LoginScreen" component={LoginScreen} />
               <Stack.Screen
                 name="DirectionChoose"

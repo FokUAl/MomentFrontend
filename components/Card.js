@@ -7,6 +7,7 @@ import axios from 'axios';
 import Theme from '../constants/Theme';
 import apis from '../constants/apis';
 import {AppStateContext} from '../store/app.context';
+import timeFormatter from '../functions/timeFormatter';
 
 export default function Card({
   price,
@@ -33,10 +34,12 @@ export default function Card({
 
   const deleteOrder = () => {
     axios
-      .post(apis.deleteSavedOrder, {
-        phone: phoneNumber,
-        date: departureDate,
-        driverPhone: appContext.phoneNumber,
+      .delete(apis.deleteSavedOrder, {
+        data: {
+          date: departureDate,
+          driverPhone: appContext.phoneNumber,
+        },
+        headers: {Authorization: appContext.androidId},
       })
       .then(response => {
         console.log('delete Order ok');
@@ -54,11 +57,11 @@ export default function Card({
       try {
         axios
           .get(apis.getOneOrder, {
+            headers: {Authorization: appContext.androidId},
             params: {
               City: appContext.cityFrom,
               ClientId: clientId,
               OrderId: orderId,
-              Phone: appContext.phoneNumber,
               AddressFrom: addressFrom,
               AddressTo: addressTo,
               PassengerName: passengerName,
@@ -178,9 +181,9 @@ export default function Card({
           {departureDate && (
             <Text style={styles.timeDeparture}>
               {date &&
-                `${date.getDate()} ${new Intl.DateTimeFormat('ru-RU', {
-                  month: 'short',
-                }).format(date)} ${date.getFullYear()}${
+                `${date.getDate()} ${timeFormatter.monthToString(
+                  date,
+                )} ${date.getFullYear()}${
                   departureTime && ` в ${departureTime}`
                 }`}
             </Text>

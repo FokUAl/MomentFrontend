@@ -30,121 +30,141 @@ function TabGroup({navigation}) {
   useEffect(() => {
     console.log('connection is', filter.filterConfigurations.isSearching);
     let ws;
-      if (filter.filterConfigurations.isMail) {
-        ws = new WebSocket('ws://3.76.124.47:8000/ws/get-parcel-phone');
-        console.log('WebSocket connection mail');
-      } else {
-        ws = new WebSocket('ws://3.76.124.47:8000/ws/get-phone');
-        console.log('WebSocket connection passenger');
-      }
+    if (filter.filterConfigurations.isMail) {
+      ws = new WebSocket(
+        'ws://3.76.124.47:8000/ws/get-parcel-phone',
+        undefined,
+        {
+          headers: {
+            Authorization: appContext.androidId,
+          },
+        },
+      );
+      console.log('WebSocket connection mail');
+    } else {
+      ws = new WebSocket('ws://3.76.124.47:8000/ws/get-phone', undefined, {
+        headers: {
+          Authorization: appContext.androidId,
+        },
+      });
+      console.log('WebSocket connection passenger');
+    }
 
-      if (!filter.filterConfigurations.isSearching) {
-        ws.close(8);
-        ws.send(JSON.stringify('close'));
-        console.log('WebSocket just closed');
-        clearInterval(ping);
-        filter.setFilterConfigurations(prev => {
-          return {
-            ...prev,
-            isSearching: false,
-          };
-        });
-      } else {
-        ws.onopen = async () => {
-          // Connection opened
-          console.log('WebSocket connection opened');
-          try {
-            ws.send(
-              JSON.stringify({
-                phone: appContext.phoneNumber,
-                price: filter.filterConfigurations.priceStart
-                  ? filter.filterConfigurations.priceStart
-                  : '0',
-                city: appContext.cityFrom,
-                destination: appContext.cityTo,
-              }),
-            );
-            filter.setFilterConfigurations(prev => {
-              return {
-                ...prev,
-                isSearchDelay: false
-              };
-            });
-            console.log('delay off')
-            ping = setInterval(sendPing, 100, ws);
-          } catch (e) {
-            console.error(e);
-          }
+    if (!filter.filterConfigurations.isSearching) {
+      ws.close(8);
+      ws.send(JSON.stringify('close'));
+      console.log('WebSocket just closed');
+      clearInterval(ping);
+      filter.setFilterConfigurations(prev => {
+        return {
+          ...prev,
+          isSearching: false,
         };
-      }
-      ws.onmessage = e => {
-        const callTimeStart = Date.now()
-        if (filter.filterConfigurations.isSearching) {
-          console.log('on message', e.data);
-          if (e.data.Error) {
-            Alert.alert('Ошибка', e.data.Error);
-          } else {
-            const newData = JSON.parse(e.data);
-            if (newData.Order.PassengerPhone) {
-              console.log('WS Call time', Date.now() - callTimeStart)
-              RNImmediatePhoneCall.immediatePhoneCall(
-                newData.Order.PassengerPhone,
-              );
-              orderContext.setOrder({
-                price: newData.Order.Price,
-                departureDate: newData.Order.DepartureDate,
-                departureTime: newData.Order.DepartureTime,
-                description: newData.Order.Description,
-                passengerName: newData.Order.PassengerName,
-                addressFrom: newData.Order.AddressFrom,
-                addressTo: newData.Order.AddressTo,
-                phoneNumber: newData.Order.PassengerPhone,
-              });
-              orderContext.setModalVisible(true);
-              setUpdate(prev => !prev);
-            }
-          }
+      });
+    } else {
+      ws.onopen = async () => {
+        // Connection opened
+        console.log('WebSocket connection opened');
+        try {
+          ws.send(
+            JSON.stringify({
+              phone: appContext.phoneNumber,
+              price: filter.filterConfigurations.priceStart
+                ? filter.filterConfigurations.priceStart
+                : '0',
+              city: appContext.cityFrom,
+              destination: appContext.cityTo,
+            }),
+          );
           filter.setFilterConfigurations(prev => {
             return {
               ...prev,
-              isSearching: false,
-              isSearchDelay: false
+              isSearchDelay: false,
             };
           });
-          clearInterval(ping);
-          ws.send(JSON.stringify('close'));
+          console.log('delay off');
+          ping = setInterval(sendPing, 100, ws);
+        } catch (e) {
+          console.error(e);
         }
       };
-      ws.onerror = e => {
-        console.log('on error', e.message);
-        clearInterval(ping);
-      };
-      ws.onclose = e => {
-        console.log('on close', e.code, e.reason);
+    }
+    ws.onmessage = e => {
+      const callTimeStart = Date.now();
+      if (filter.filterConfigurations.isSearching) {
+        console.log('on message', e.data);
+        if (e.data.Error) {
+          Alert.alert('Ошибка', e.data.Error);
+        } else {
+          const newData = JSON.parse(e.data);
+          if (newData.Order.PassengerPhone) {
+            const beforeCall = Date.now();
+            RNImmediatePhoneCall.immediatePhoneCall(
+              newData.Order.PassengerPhone,
+            );
+            console.log(
+              'WS Call time',
+              `От получения номера до окончания выполнения вызова - ${
+                Date.now() - callTimeStart
+              }, от начала выполнения вызова до окончания выполнения вызова ${
+                Date.now() - beforeCall
+              }`,
+            );
+            orderContext.setOrder({
+              price: newData.Order.Price,
+              departureDate: newData.Order.DepartureDate,
+              departureTime: newData.Order.DepartureTime,
+              description: newData.Order.Description,
+              passengerName: newData.Order.PassengerName,
+              addressFrom: newData.Order.AddressFrom,
+              addressTo: newData.Order.AddressTo,
+              phoneNumber: newData.Order.PassengerPhone,
+            });
+            orderContext.setModalVisible(true);
+            setUpdate(prev => !prev);
+          }
+        }
         filter.setFilterConfigurations(prev => {
           return {
             ...prev,
             isSearching: false,
-            isSearchDelay: false
+            isSearchDelay: false,
           };
         });
         clearInterval(ping);
         ws.send(JSON.stringify('close'));
-      };
-
-      if (!filter.filterConfigurations.isSearching) {
-        filter.setFilterConfigurations(prev => {
-          return {
-            ...prev,
-            isSearching: false,
-          };
-        });
       }
+    };
+    ws.onerror = e => {
+      console.log('on error', e.message);
+      clearInterval(ping);
+    };
+    ws.onclose = e => {
+      console.log('on close', e.code, e.reason);
+      filter.setFilterConfigurations(prev => {
+        return {
+          ...prev,
+          isSearching: false,
+          isSearchDelay: false,
+        };
+      });
+      clearInterval(ping);
+      ws.send(JSON.stringify('close'));
+    };
 
-      return () => {
-        clearInterval(ping);
-        ws.send(JSON.stringify('close'));
-      };
+    if (!filter.filterConfigurations.isSearching) {
+      filter.setFilterConfigurations(prev => {
+        return {
+          ...prev,
+          isSearching: false,
+        };
+      });
+    }
+
+    return () => {
+      clearInterval(ping);
+      ws.send(JSON.stringify('close'));
+    };
   }, [filter.filterConfigurations.isSearching]);
 
   return (

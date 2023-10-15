@@ -10,9 +10,10 @@ import {AppStateContext} from '../../../store/app.context';
 const Profile = () => {
   const appContext = useContext(AppStateContext);
   const colors = Theme(appContext.darkTheme);
-  const [data, setData] = useState({isLoading: true, Profile: null});
+  const [data, setData] = useState({isLoading: true});
 
   function unicodeToChar(text) {
+    console.log('username', text)
     if (text) {
       return text.replace(/\\u[\dA-F]{4}/gi, function (match) {
         return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
@@ -53,8 +54,7 @@ const Profile = () => {
     textArea: {
       flex: 2,
     },
-    textCenter: {
-      textAlign: 'center',
+    text: {
       color: colors.text,
     },
     avatar: {
@@ -73,9 +73,23 @@ const Profile = () => {
         axios
           .get(apis.getProfile, {params: {phone: appContext.phoneNumber}})
           .then(response => {
+            console.log(response.data);
             setData({
               isLoading: false,
-              Profile: response.data,
+              ActiveStatus: response.data.ActiveStatus,
+              Balance: response.data.Balance,
+              BalanceInd: response.data.BalanceInd,
+              Expired: new Date(response.data.Expired),
+              AppVersion: response.data.Profile.AppVersion,
+              AvatarMedium: response.data.Profile.AvatarMedium,
+              CarGosNomer: response.data.Profile.CarGosNomer,
+              CarModel: response.data.Profile.CarModel,
+              DeviceModel: response.data.Profile.DeviceModel,
+              ID: response.data.Profile.ID,
+              OsVersion: response.data.Profile.OsVersion,
+              Phone: response.data.Profile.Phone,
+              Token: response.data.Profile.Token,
+              Username: response.data.Profile.Username,
             });
           })
           .catch(error => {
@@ -96,23 +110,42 @@ const Profile = () => {
       ) : (
         <View style={styles.container}>
           <View style={styles.avaArea}>
-            {data.Profile.AvatarMedium && (
-              <Image
-                source={{uri: data.Profile.AvatarMedium}}
-                style={styles.avatar}
-              />
+            {data.AvatarMedium && (
+              <Image source={{uri: data.AvatarMedium}} style={styles.avatar} />
             )}
           </View>
           <View style={styles.textArea}>
-            <Text style={styles.textCenter}>
-              {unicodeToChar(data.Profile.Username)}
-            </Text>
-            <Text style={styles.textCenter}>{`+${data.Profile.Phone}`}</Text>
-            {data.Profile.CarModel && (
-              <Text style={styles.textCenter}>{data.Profile.CarModel}</Text>
+            {data.Username && (
+              <Text style={styles.text}>{unicodeToChar(data.Username)}</Text>
             )}
-            {data.Profile.CarGosNomer && (
-              <Text style={styles.textCenter}>{data.Profile.CarGosNomer}</Text>
+            <Text style={styles.text}>{`+${data.Phone}`}</Text>
+            {data.CarModel && <Text style={styles.text}>{data.CarModel}</Text>}
+            {data.CarGosNomer && (
+              <Text style={styles.text}>{data.CarGosNomer}</Text>
+            )}
+            <Text style={styles.text}>
+              Статус аккаунта:{' '}
+              {data.ActiveStatus ? (
+                <Text style={{color: colors.second}}>активен</Text>
+              ) : (
+                <Text style={{color: colors.warning}}>неактивен</Text>
+              )}
+            </Text>
+            {data.Expired && (
+              <Text style={styles.text}>
+                Следующая оплата:{' '}
+                {`${data.Expired.getDate()}.${
+                  data.Expired.getMonth() + 1
+                }.${data.Expired.getFullYear()}`}
+              </Text>
+            )}
+            {data.Balance && (
+              <Text style={styles.text}>
+                Баланс AsemKala: {data.Balance} тг.
+              </Text>
+            )}
+            {data.BalanceInd && (
+              <Text style={styles.text}>Баланс inDrive: {data.BalanceInd}</Text>
             )}
           </View>
         </View>

@@ -26,7 +26,7 @@ export default function LoginScreen({navigation}) {
   const [sms, setSms] = useState('');
 
   const skip = () => {
-    navigation.navigate('DirectionChoose');
+    navigation.navigate('TokenScreen');
     if (phoneNumber) {
       appContext.setPhoneNumber(phoneNumber)
     }
@@ -74,7 +74,7 @@ export default function LoginScreen({navigation}) {
         console.log('Send Message Code ok');
         savePhoneNumber(phoneNumber);
         appContext.setPhoneNumber(phoneNumber);
-        navigation.navigate('DirectionChoose');
+        navigation.navigate('TokenScreen');
       })
       .catch(error => {
         console.log('sendMessageCode err: ', error.message);
@@ -102,7 +102,7 @@ export default function LoginScreen({navigation}) {
           setWarningPhone(false);
           setWarningSms(false);
           appContext.setPhoneNumber(value);
-          navigation.navigate('DirectionChoose');
+          navigation.navigate('TokenScreen');
         }
       } catch (e) {
         console.error(e);

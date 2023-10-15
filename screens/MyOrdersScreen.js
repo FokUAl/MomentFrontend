@@ -28,7 +28,10 @@ export default function MyOrdersScreen({navigation}) {
     console.log('isFocused', isFocused);
     console.log('myOrders check');
     axios
-      .get(apis.getSavedOrders, {params: {phone: appContext.phoneNumber}})
+      .get(apis.getSavedOrders, {
+        headers: {Authorization: appContext.androidId},
+        params: {phone: appContext.phoneNumber},
+      })
       .then(response => {
         console.log('myOrders ok');
         setData({

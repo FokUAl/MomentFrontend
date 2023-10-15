@@ -63,10 +63,12 @@ const InputDate = ({
           <Text style={styles.text}>
             {value
               ? type === 'date'
-                ? `${value.getDate()} ${new Intl.DateTimeFormat('ru-RU', {
-                    month: 'short',
-                  }).format(value)} ${value.getFullYear()} г.`
-                : `${(value.getHours()<10?'0':'')}${value.getHours()}:${(value.getMinutes()<10?'0':'')}${value.getMinutes()}`
+                ? `${value.getDate()} ${timeFormatter.monthToString(
+                    value,
+                  )} ${value.getFullYear()} г.`
+                : `${value.getHours() < 10 ? '0' : ''}${value.getHours()}:${
+                    value.getMinutes() < 10 ? '0' : ''
+                  }${value.getMinutes()}`
               : ''}
           </Text>
         ) : (

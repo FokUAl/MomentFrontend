@@ -13,6 +13,17 @@ export default function InitScreen({navigation}) {
   const [curVer, setCurVer] = useState();
   const link = useRef(null);
 
+  // useEffect(() => {
+  //   axios.get(apis.getToken).then(response => {
+  //     if (response.data.message === 'Not exist') {
+
+  //     }
+  //   })
+  //   DeviceInfo.getAndroidId().then((androidId) => {
+  //     appContext.setAndroidId(androidId)
+  //   });
+  // }, [])
+
   useEffect(() => {
     const getMode = async () => {
       try {

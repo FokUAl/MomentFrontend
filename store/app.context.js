@@ -9,6 +9,7 @@ export const AppStateProvider = props => {
   const [needUpdate, setNeedUpdate] = useState({need: false, link: undefined});
   const [darkTheme, setDarkTheme] = useState(false)
   const [offerTimer, setOfferTimer] = useState(false)
+  const [androidId, setAndroidId] = useState(null)
   return (
     <AppStateContext.Provider
       value={{
@@ -23,7 +24,9 @@ export const AppStateProvider = props => {
         darkTheme,
         setDarkTheme,
         offerTimer,
-        setOfferTimer
+        setOfferTimer,
+        androidId,
+        setAndroidId
       }}>
       {props.children}
     </AppStateContext.Provider>

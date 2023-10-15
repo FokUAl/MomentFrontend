@@ -8,6 +8,7 @@ import InputDate from '../../../components/InputDate';
 import Button from '../../../components/Button';
 import axios from 'axios';
 import apis from '../../../constants/apis';
+import timeFormatter from '../../../functions/timeFormatter';
 
 const AddOffer = () => {
   const appContext = useContext(AppStateContext);
@@ -25,29 +26,34 @@ const AddOffer = () => {
 
   const onSubmit = () => {
     if (offer.price && offer.comm && offer.date && offer.time) {
-      const departureTime = `${Intl.DateTimeFormat('en-US', {
-        weekday: 'short',
-      }).format(
+      const departureTime = `${timeFormatter.weekToStringEng(offer.date)}, ${
+        offer.date.getDate() < 10 ? '0' : ''
+      }${offer.date.getDate()} ${timeFormatter.monthToStringEng(
         offer.date,
-      )}, ${(offer.date.getDate()<10?'0':'')}${offer.date.getDate()} ${Intl.DateTimeFormat('en-US', {
-        month: 'short',
-      }).format(
-        offer.date,
-      )} ${offer.date.getFullYear()} ${(offer.time.getHours()<10?'0':'')}${offer.time.getHours()}:${(offer.time.getMinutes()<10?'0':'')}${offer.time.getMinutes()}:00 +0600`;
+      )} ${offer.date.getFullYear()} ${
+        offer.time.getHours() < 10 ? '0' : ''
+      }${offer.time.getHours()}:${
+        offer.time.getMinutes() < 10 ? '0' : ''
+      }${offer.time.getMinutes()}:00 +0600`;
       const request = async () => {
         axios
-          .post(apis.addOffer, {
-            City: appContext.cityFrom,
-            Destination: appContext.cityTo,
-            Departure: departureTime,
-            Phone: appContext.phoneNumber,
-            Price: offer.price,
-            Description: offer.comm,
-          })
+          .post(
+            apis.addOffer,
+            {
+              City: appContext.cityFrom,
+              Destination: appContext.cityTo,
+              Departure: departureTime,
+              Price: offer.price,
+              Description: offer.comm,
+            },
+            {
+              headers: {Authorization: appContext.androidId},
+            },
+          )
           .then(response => {
             console.log('response', response.data.Content);
             if (response.data.Content.split(' ')[0] === 'Требуется') {
-              console.log(departureTime)
+              console.log(departureTime);
               Alert.alert('Добавить заказ?', response.data.Content, [
                 {
                   text: 'Отмена',
@@ -58,15 +64,20 @@ const AddOffer = () => {
                   text: 'Добавить',
                   onPress: () => {
                     axios
-                      .post(apis.addOfferConfirmation, {
-                        City: appContext.cityFrom,
-                        Destination: appContext.cityTo,
-                        // Departure:"Tue, 8 Aug 2023 20:30:00 +0600",
-                        Departure: departureTime,
-                        Phone: appContext.phoneNumber,
-                        Price: offer.price,
-                        Description: offer.comm,
-                      })
+                      .post(
+                        apis.addOfferConfirmation,
+                        {
+                          City: appContext.cityFrom,
+                          Destination: appContext.cityTo,
+                          // Departure:"Tue, 8 Aug 2023 20:30:00 +0600",
+                          Departure: departureTime,
+                          Price: offer.price,
+                          Description: offer.comm,
+                        },
+                        {
+                          headers: {Authorization: appContext.androidId},
+                        },
+                      )
                       .then(response => {
                         console.log('add offer confirmation ok', response);
                         Alert.alert('Заказ добавлен');
