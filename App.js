@@ -7,6 +7,7 @@ import TokenScreen from './screens/TokenScreen'
 import LoginScreen from './screens/LoginScreen';
 import NewVersionScreen from './screens/NewVersionScreen';
 import DirectionChooseScreen from './screens/DirectionChooseScreen';
+import NoConnectionScreen from './screens/NoConnectionScreen'
 import Nav from './components/Nav';
 import {AppStateProvider} from './store/app.context';
 import {FilterStateProvider} from './store/filter.context';
@@ -41,6 +42,10 @@ export default function App() {
               <Stack.Screen
                 name="NewVersionScreen"
                 component={NewVersionScreen}
+              />
+              <Stack.Screen
+                name="NoConnectionScreen"
+                component={NoConnectionScreen}
               />
             </Stack.Navigator>
           </NavigationContainer>

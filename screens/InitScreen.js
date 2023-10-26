@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef, useContext} from 'react';
-import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
+import {View, Text, ActivityIndicator, StyleSheet, Image} from 'react-native';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import apis from '../constants/apis';
@@ -55,6 +55,8 @@ export default function InitScreen({navigation}) {
           navigation.navigate('LoginScreen');
         }, 3000);
       }
+    } else {
+      navigation.navigate('NoConnectionScreen');
     }
   }, [curVer, newVer]);
   console.log('init cur', curVer, 'new', newVer);
@@ -77,10 +79,24 @@ export default function InitScreen({navigation}) {
       flex: 1,
       justifyContent: 'center',
     },
+    imageWrapper: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+    logo: {
+      width: 200,
+      height: 200,
+    },
   });
 
   return (
     <View style={styles.container}>
+      <View style={styles.imageWrapper}>
+        <Image
+          style={styles.logo}
+          source={require('../assets/icons/AK_logo.png')}
+        />
+      </View>
       <ActivityIndicator
         size="large"
         color={'#07bc67'}

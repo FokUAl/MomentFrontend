@@ -20,16 +20,14 @@ const ModalContent = () => {
   const [openDate, setOpenDate] = useState(false);
   const [openTimeStart, setOpenTimeStart] = useState(false);
   const [openTimeEnd, setOpenTimeEnd] = useState(false);
-  const [connection, setConnection] = useState(false);
 
-  const CheckOffer = () => {
-    axios.get(apis.checkOffer, {headers: {Authorization: appContext.androidId}})
+  const CheckOffer = async() => {
+    await axios.get(apis.checkOffer, {headers: {Authorization: appContext.androidId}})
     .then(response => {
       console.log('checkoffer', response.data)
       if (response.data.Response === 'Маршрут не выставлен. Добавьте его') {
-
+        Alert.alert('Ошибка', response.data.Response)
       }
-      // setConnection(prev => !prev);
     })
     .catch(err => console.err(err.message))
   }
@@ -220,7 +218,6 @@ const ModalContent = () => {
                 setOpenTimeEnd(false);
                 setOpenTimeStart(false);
                 CheckOffer()
-                console.log('delay on');
               }}
               isDisabled={filter.filterConfigurations.isSearchDelay}
             />

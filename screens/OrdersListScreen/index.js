@@ -51,6 +51,7 @@ export default function OrdersListScreen({navigation, update}) {
           })
           .catch(error => {
             console.log('ordersList err', error);
+            navigation.navigate('NoConnectionScreen')
             return false;
           });
       } catch (e) {
